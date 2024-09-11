@@ -1,0 +1,83 @@
+enum UserRole {
+  User
+  Mod
+  Admin
+}
+
+enum TipoDocumento {
+  DNI       @map("DNI")
+  Pasaporte @map("Pasaporte")
+  Carnet    @map("Carnet de Extranjería")
+  Otro      @map("Otro")
+}
+
+model User {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @map("id_usuario") @db.Uuid
+  name          String?
+  email         String    @unique
+  emailVerified DateTime? @map("email_verified")
+  image         String?
+  password      String?
+  puntos        Int       @default(0)
+  rol           UserRole  @default(User)
+
+  telefono         String?
+  fecha_nacimiento DateTime?
+  direccion        String?
+  documento        String?
+  tipo_documento   TipoDocumento @default(DNI)
+
+  account  Account[]
+  sessions Session[]
+
+  activo Boolean @default(true)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updateAt  DateTime @updatedAt @db.Timestamptz(6)
+
+  @@unique([email, documento, telefono], map: "datos_usuario_unicos")
+  @@map("usuario")
+}
+
+model Account {
+  userId            String  @map("user_id") @db.Uuid
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+  @@map("cuenta")
+}
+
+model Session {
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id") @db.Uuid
+  expires      DateTime @db.Timestamptz(6)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  @@map("sesion")
+}
+
+model VerificationToken {
+  identifier String   @unique
+  token      String
+  expires    DateTime @db.Timestamptz(6)
+
+  @@id([identifier])
+  @@map("token_verificacion")
+}
