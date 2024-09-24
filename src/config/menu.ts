@@ -1,4 +1,4 @@
-import { type SiteMenu } from "@/lib/site-menu";
+import { type SiteMenu } from "@/utils/site-menu";
 
 import {
   Home,

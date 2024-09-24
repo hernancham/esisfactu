@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { siteMenu } from "@/config/menu";
-import { getSiteMenu } from "@/lib/site-menu";
+import { getSiteMenu } from "@/utils/site-menu";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { CollapseMenuButton } from "@/components/custom/collapse-menu-button";
