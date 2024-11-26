@@ -1,3 +1,4 @@
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import {
   // error
@@ -54,39 +55,20 @@ const alertOptions = {
 };
 
 interface AlertMessageProps {
-  title: string;
   message: string;
   type: "error" | "warning" | "info" | "help" | "success" | "default";
 }
 
-const AlertOptions = () => {};
-
-export const AlertMessage = ({ title, message, type }: AlertMessageProps) => {
+export const AlertMessage = ({ message, type }: AlertMessageProps) => {
   const { option, icon: Icon, color, bg } = alertOptions[type];
   return (
-    <div
+    <Alert
       className={cn("flex w-full items-center p-4 mb-4 gap-2 text-sm", bg)}
       role='alert'
     >
       <Icon className={cn("size-4", color)} />
-      <span className='sr-only'>{option}</span>
-      <div>{message}</div>
-    </div>
-  );
-};
-
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { title } from "process";
-import { error, timeLog } from "console";
-
-export function AlertDemo() {
-  return (
-    <Alert>
-      <Rocket className='size-4 text-red-500' />
-      <AlertTitle>Heads up!</AlertTitle>
-      <AlertDescription>
-        You can add components to your app using the cli.
-      </AlertDescription>
+      <AlertTitle>{option}</AlertTitle>
+      <AlertDescription>{message}</AlertDescription>
     </Alert>
   );
-}
+};

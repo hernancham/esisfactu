@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { SocialButton } from "./SocialButton";
 import { GoogleLogo } from "@/components/logos";
-import { loginRoute, registerRoute } from "@/auth/routes";
+import { registerRoute } from "@/auth/routes";
 import { LoginForm } from "./LoginForm";
 import { EsisfactuLogo } from "@/components/custom/EsisfactuLogo";
 
@@ -19,29 +19,44 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AlertMessage } from "@/components/custom/AlertMessage";
 
-export const LoginCard = () => {
-  const params = useSearchParams();
-  const error = params.get("error");
-  const router = useRouter();
+type AlertType = {
+  type: "error" | "warning" | "info" | "help" | "success" | "default";
+  message: string;
+};
 
-  const [globalError, setGlobalError] = useState<string | null>(null);
+export const LoginCard = () => {
+  const router = useRouter();
+  const params = useSearchParams();
+  const isVerified = params.get("verified");
+  const error = params.get("error");
+
+  const [alert, setAlert] = useState<AlertType | null>(null);
 
   useEffect(() => {
     if (error) {
       switch (error) {
         case "OAuthAccountNotLinked":
-          setGlobalError(
-            "Por favor, usa tu correo electrónico y contraseña para iniciar sesión."
-          );
+          setAlert({
+            type: "error",
+            message: "This account is already linked to another user.",
+          });
           break;
         default:
-          setGlobalError(
-            "Ocurrió un error inesperado. Por favor, inténtalo de nuevo."
-          );
+          setAlert({
+            type: "error",
+            message: "An error occurred. Please try again.",
+          });
+          break;
       }
     }
-    router.replace(loginRoute);
-  }, [error, router]);
+    if (isVerified === "true") {
+      setAlert({
+        type: "success",
+        message: "Tu cuenta ha sido verificada. Ahora puedes iniciar sesión.",
+      });
+    }
+    router.replace("/login");
+  }, [isVerified, error, router]);
 
   return (
     <Card className='relative max-w-md shadow-md pt-12'>
@@ -57,14 +72,13 @@ export const LoginCard = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {globalError && (
+        {alert && (
           <AlertMessage
-            title='Error'
-            message={globalError}
-            type='error'
+            message={alert.message}
+            type={alert.type}
           />
         )}
-        <LoginForm setError={setGlobalError} />
+        <LoginForm setAlert={setAlert} />
         <span className='text-sm text-gray-500 text-center block my-2'>or</span>
         <div className='my-4'>
           <SocialButton provider='google'>

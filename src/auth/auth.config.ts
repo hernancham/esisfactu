@@ -17,6 +17,7 @@ import {
   publicRoutes,
   authRoutes,
 } from "./routes";
+import { sendVerificationEmail } from "@/utils/send-verification-email";
 
 export const authConfig = {
   pages: {
@@ -47,41 +48,35 @@ export const authConfig = {
         },
       },
       authorize: async (credentials) => {
-        let user = null;
-
-        const { data, success, error } = loginSchema.safeParse(credentials);
+        const { data, success } = loginSchema.safeParse(credentials);
 
         if (!success) {
-          console.error("Credenciales Invalidas", error.errors);
-          return null;
+          throw new Error("Credenciales inválidas");
         }
 
-        user = await prisma.user.findUnique({
+        const user = await prisma.user.findUnique({
           where: {
             email: data.email,
           },
         });
 
         if (!user) {
-          console.log("Credenciales Invalidas");
-          return null;
+          throw new Error("El usuario no esta registrado");
         }
 
         if (!user.password) {
-          console.log(
+          throw new Error(
             "El usuario no tiene contraseña. Probablemente se registró con un proveedor de oauth."
           );
-          return null;
         }
 
         const isValid = await bcrypt.compare(data.password, user.password);
 
         if (!isValid) {
-          console.log("Contraseña incorrecta");
-          return null;
+          throw new Error("Contraseña incorrecta");
         }
 
-        if (!user.emailVerified && false) {
+        if (!user.emailVerified) {
           const verifyTokenExits = await prisma.verificationToken.findFirst({
             where: {
               identifier: user.email,
@@ -108,7 +103,11 @@ export const authConfig = {
           });
 
           // enviar email de verificación
-          /* await sendEmailVerification(user.email, token); */
+          await sendVerificationEmail({
+            email: user.email,
+            username: user.name as string,
+            token,
+          });
 
           throw new Error("Por favor, verifica tu Email");
         }
@@ -116,6 +115,9 @@ export const authConfig = {
         return {
           id: user.id,
           rol: user.rol,
+          email: user.email,
+          name: user.name,
+          image: user.image,
         };
       },
     }),

@@ -16,8 +16,13 @@ import { RegisterForm } from "./RegisterForm";
 import { EsisfactuLogo } from "@/components/custom/EsisfactuLogo";
 import { AlertMessage } from "@/components/custom/AlertMessage";
 
+type AlertType = {
+  type: "error" | "warning" | "info" | "help" | "success" | "default";
+  message: string;
+};
+
 export const RegisterCard = () => {
-  const [globalError, setGlobalError] = useState<string | null>(null);
+  const [alert, setAlert] = useState<AlertType | null>(null);
 
   return (
     <Card className='relative max-w-md shadow-md pt-12'>
@@ -33,14 +38,13 @@ export const RegisterCard = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {globalError && (
+        {alert && (
           <AlertMessage
-            title='Error'
-            message={globalError}
-            type='error'
+            message={alert.message}
+            type={alert.type}
           />
         )}
-        <RegisterForm setError={setGlobalError} />
+        <RegisterForm setAlert={setAlert} />
       </CardContent>
       <CardFooter>
         <div className='w-full text-sm text-center'>

@@ -18,12 +18,22 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Dispatch, SetStateAction } from "react";
+import { useRouter } from "next/navigation";
+import { defaultRoute } from "@/auth/routes";
+
+type AlertType = {
+  type: "error" | "warning" | "info" | "help" | "success" | "default";
+  message: string;
+};
 
 interface LoginFormProps {
-  setError: (error: string | null) => void;
+  setAlert: Dispatch<SetStateAction<AlertType | null>>;
 }
 
-export const LoginForm = ({ setError }: LoginFormProps) => {
+export const LoginForm = ({ setAlert }: LoginFormProps) => {
+  const router = useRouter();
+
   const form = useForm<loginType>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -33,15 +43,15 @@ export const LoginForm = ({ setError }: LoginFormProps) => {
   });
 
   async function onSubmit(values: loginType) {
-    try {
-      const result = await logInCredentialsAction(values);
-      if (result?.message) {
-        setError(result.message);
-      }
-    } catch (error) {
-      console.log(
-        "Ocurrió un error inesperado. Por favor, inténtalo de nuevo."
-      );
+    setAlert(null);
+    const result = await logInCredentialsAction(values);
+    if (result.type === "error") {
+      setAlert({
+        type: result.type,
+        message: result.message,
+      });
+    } else if (result.type === "success") {
+      router.push(defaultRoute);
     }
   }
 

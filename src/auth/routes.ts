@@ -13,7 +13,7 @@ export const registerRoute = "/register";
 export const authRoutes = [loginRoute, logoutRoute, registerRoute];
 
 // Todos los usuarios pueden acceder a las rutas públicas
-export const publicRoutes = [...authRoutes, "/", "/api/producto", "/dashboard"];
+export const publicRoutes = [...authRoutes, "/", "mi-cuenta"];
 
 // Solo los usuarios autenticados pueden acceder a las rutas y subrutas protegidas
-export const protectedRoutes = [];
+export const protectedRoutes = ["/dashboard"];

@@ -6,7 +6,7 @@ import { AuthError } from "next-auth";
 
 import bcryptjs from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { defaultRoute } from "@/auth/routes";
+import { defaultRoute } from "./routes";
 
 export const logInCredentialsAction = async (values: loginType) => {
   try {
@@ -15,20 +15,20 @@ export const logInCredentialsAction = async (values: loginType) => {
       password: values.password,
       redirectTo: defaultRoute,
     });
+
+    return { type: "success", message: "Inicio de sesión exitoso." };
   } catch (error) {
     if (error instanceof AuthError) {
-      switch (error.type) {
-        case "CredentialsSignin":
-          return {
-            message: "Credenciales inválidas",
-          };
-        default:
-          return {
-            message: "Algo salió mal.",
-          };
-      }
+      return {
+        type: "error",
+        message: error.cause?.err?.message as string,
+      };
     }
-    throw error;
+    console.error("Error logging in:", error);
+    return {
+      type: "error",
+      message: "Ocurrió un error inesperado.",
+    };
   }
 };
 
@@ -37,9 +37,7 @@ export async function logInOauthAction({ oauth }: { oauth: string }) {
 }
 
 export const logOutAction = async () => {
-  await signOut({
-    redirectTo: defaultRoute,
-  });
+  await signOut();
 };
 
 export const logUpAction = async (values: registerType) => {
@@ -47,9 +45,8 @@ export const logUpAction = async (values: registerType) => {
     const { data, success } = registerSchema.safeParse(values);
     if (!success) {
       return {
-        success: false,
-        message:
-          "Datos inválidos. Por favor, revise la información proporcionada.",
+        type: "error",
+        message: "Datos inválidos",
       };
     }
 
@@ -62,7 +59,7 @@ export const logUpAction = async (values: registerType) => {
 
     if (existingUser) {
       return {
-        success: false,
+        type: "error",
         message:
           "El correo electrónico ya existe. Inicie sesión para continuar.",
       };
@@ -79,15 +76,27 @@ export const logUpAction = async (values: registerType) => {
       },
     });
 
+    await signIn("credentials", {
+      email: data.email,
+      password: data.password,
+      redirect: false,
+    });
+
     return {
-      success: true,
-      message: "Cuenta creada exitosamente.",
+      type: "success",
+      message: "Revisa tu correo electrónico para verificar tu cuenta.",
     };
   } catch (error) {
+    if (error instanceof AuthError) {
+      return {
+        type: "info",
+        message: error.cause?.err?.message as string,
+      };
+    }
     console.error("Error creating account:", error);
     return {
-      success: false,
-      message: "Ocurrió un error inesperado. Por favor, inténtelo de nuevo.",
+      type: "error",
+      message: "Ocurrió un error inesperado.",
     };
   }
 };
