@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { LoginCard } from "./_components/LoginCard";
 
 export default function LoginPage() {
@@ -13,7 +14,9 @@ export default function LoginPage() {
         />
       </div>
       <div className='flex flex-col items-center justify-center'>
-        <LoginCard />
+        <Suspense fallback={<>...</>}>
+          <LoginCard />
+        </Suspense>
       </div>
     </div>
   );
