@@ -1,4 +1,4 @@
-interface ServerActionResponse {
+export interface ServerActionResponse {
   success: boolean;
   message: string;
 }

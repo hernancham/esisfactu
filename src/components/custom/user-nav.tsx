@@ -20,11 +20,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useSession } from "next-auth/react";
 
 export function UserNav() {
-  const session = useSession();
-  const h = session.data?.user?.name;
   return (
     <DropdownMenu>
       <TooltipProvider disableHoverableContent>

@@ -14,23 +14,23 @@ const envVars = z.object({
   // Credentials for the Auth
   AUTH_SECRET: z.string(),
   // Credentials for the Auth Providers (Google, Facebook, GitHub, etc)
-  AUTH_GOOGLE_ID: z.string().optional(),
-  AUTH_GOOGLE_SECRET: z.string().optional(),
+  AUTH_GOOGLE_ID: z.string(),
+  AUTH_GOOGLE_SECRET: z.string(),
   AUTH_FACEBOOK_ID: z.string().optional(),
   AUTH_FACEBOOK_SECRET: z.string().optional(),
   AUTH_GITHUB_ID: z.string().optional(),
   AUTH_GITHUB_SECRET: z.string().optional(),
   // Credentials for the Email
   AUTH_RESEND_KEY: z.string().optional(),
-  EMAIL_USER: z.string().optional(),
-  EMAIL_PASS: z.string().optional(),
+  EMAIL_USER: z.string(),
+  EMAIL_PASS: z.string(),
   // Credentials for Cloudinary
-  CLOUDINARY_CLOUD_NAME: z.string().optional(),
-  CLOUDINARY_API_KEY: z.string().optional(),
-  CLOUDINARY_API_SECRET: z.string().optional(),
+  CLOUDINARY_CLOUD_NAME: z.string(),
+  CLOUDINARY_API_KEY: z.string(),
+  CLOUDINARY_API_SECRET: z.string(),
   // Public URLs for the App and API
-  NEXT_PUBLIC_APP_URL: z.string().optional(),
-  NEXT_PUBLIC_API_URL: z.string().optional(),
+  NEXT_PUBLIC_APP_URL: z.string(),
+  NEXT_PUBLIC_API_URL: z.string(),
 });
 
 envVars.parse(process.env);

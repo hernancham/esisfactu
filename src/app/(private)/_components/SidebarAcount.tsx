@@ -10,7 +10,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
@@ -53,7 +52,7 @@ interface SidebarAcountProps {
 }
 
 export const SidebarAcount = ({ acount }: SidebarAcountProps) => {
-  const { data, status, update } = useSession();
+  const { data, status } = useSession();
 
   if (status === "authenticated") {
     acount.user = {
