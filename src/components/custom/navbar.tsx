@@ -1,5 +1,5 @@
 import { ModeToggle } from "@/components/custom/ModeToggle";
-import { UserNav } from "@/components/custom/user-nav";
+import { UserNav } from "@/components/custom/UserNav";
 
 export function Navbar() {
   return (
@@ -10,7 +10,7 @@ export function Navbar() {
         </div>
         <div className='flex flex-1 items-center justify-end'>
           <ModeToggle />
-          <UserNav />
+          {/* <UserNav /> */}
         </div>
       </div>
     </header>

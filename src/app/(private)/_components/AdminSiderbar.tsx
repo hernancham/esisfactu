@@ -100,7 +100,7 @@ const navMenu = [
         ],
       },
       {
-        title: "Settings",
+        title: "Configuraciones",
         url: "#",
         icon: Settings2,
         items: [
@@ -190,16 +190,6 @@ const acount = {
     role: "Admin",
   },
   options: [
-    {
-      title: "Actualiza Plan",
-      items: [
-        {
-          name: "Actualiza a Pro",
-          icon: Sparkles,
-          url: "/planes",
-        },
-      ],
-    },
     {
       title: "Cuenta",
       items: [

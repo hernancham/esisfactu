@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { signIn } from "next-auth/react";
+import { defaultRoute } from "@/auth/routes";
 
 interface SocialButtonProps {
   children: React.ReactNode;
@@ -10,7 +11,9 @@ interface SocialButtonProps {
 
 export const SocialButton = ({ children, provider }: SocialButtonProps) => {
   const handleClick = async () => {
-    await signIn(provider);
+    await signIn(provider, {
+      callbackUrl: defaultRoute,
+    });
   };
 
   return (

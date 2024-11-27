@@ -1,6 +1,6 @@
 "use client";
 
-import { loginRoute } from "@/auth/routes";
+import { defaultRoute, loginRoute } from "@/auth/routes";
 
 import Link from "next/link";
 import {
@@ -14,6 +14,13 @@ import {
 import { EsisfactuLogo } from "@/components/custom/EsisfactuLogo";
 import { Button } from "@/components/ui/button";
 import { logOutAction } from "@/auth/actions";
+import { signOut } from "next-auth/react";
+
+const handleClick = async () => {
+  await signOut({
+    callbackUrl: defaultRoute,
+  });
+};
 
 export const LogoutCard = () => {
   return (
@@ -38,7 +45,7 @@ export const LogoutCard = () => {
           className='h-full w-full object-cover'
         />
         <Button
-          onClick={() => logOutAction()}
+          onClick={handleClick}
           className='w-full'
         >
           Salir
