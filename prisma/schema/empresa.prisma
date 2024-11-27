@@ -1,0 +1,14 @@
+enum TipoEmpresa {
+  Restaurante
+}
+
+model Empresa {
+  id          Int          @id @default(autoincrement())
+  nombre      String       @db.VarChar(100)
+  email       String?      @db.VarChar(100)
+  ruc         String       @db.VarChar(11)
+  direccion   String?      @db.VarChar(255)
+  telefono    String?      @db.VarChar(15)
+  tipoEmpresa TipoEmpresa  @map("tipo_empresa")
+  restaurante Restaurante?
+}

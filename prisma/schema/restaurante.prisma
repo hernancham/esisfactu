@@ -1,0 +1,106 @@
+enum EmpleadoRol {
+  Mozo
+  Cajero
+  Cocinero
+  Admin
+}
+
+model Restaurante {
+  id            Int        @id @default(autoincrement())
+  idEmpresa     Int        @unique @map("id_empresa")
+  empresa       Empresa    @relation(fields: [idEmpresa], references: [id])
+  empleado      Empleado[]
+  mesas         Mesa[]
+  productos     Producto[]
+  pedidos       Pedido[]
+  fechaCreacion DateTime   @default(now()) @map("fecha_creacion")
+}
+
+model Empleado {
+  id Int @id @default(autoincrement())
+
+  usuario    String @db.VarChar(100)
+  contrasena String @db.VarChar(100)
+
+  nombre        String      @db.VarChar(100)
+  apellido      String      @db.VarChar(100)
+  telefono      String?     @db.VarChar(15)
+  dni           String      @db.VarChar(8)
+  idRestaurante Int         @map("id_restaurante")
+  empleadoRol   EmpleadoRol @map("empleado_rol")
+  Restaurante   Restaurante @relation(fields: [idRestaurante], references: [id])
+  pedidos       Pedido[]    @relation("MozoPedidos")
+  compras       Compra[]    @relation("CajeroCompras")
+}
+
+model Mesa {
+  id            Int         @id @default(autoincrement())
+  numeroMesa    Int         @map("numero_mesa")
+  capacidad     Int?
+  idRestaurante Int         @map("id_restaurante")
+  Restaurante   Restaurante @relation(fields: [idRestaurante], references: [id])
+  pedidos       Pedido[]
+}
+
+model CategoriaProducto {
+  id              Int        @id @default(autoincrement())
+  nombreCategoria String     @map("nombre_categoria") @db.VarChar(100)
+  productos       Producto[]
+}
+
+model Producto {
+  id             Int               @id @default(autoincrement())
+  nombreProducto String            @map("nombre_producto") @db.VarChar(100)
+  precio         Float
+  idCategoria    Int               @map("id_categoria")
+  idRestaurante  Int               @map("id_restaurante")
+  categoria      CategoriaProducto @relation(fields: [idCategoria], references: [id])
+  Restaurante    Restaurante       @relation(fields: [idRestaurante], references: [id])
+  detalles       DetallePedido[]
+}
+
+model Pedido {
+  id            Int             @id @default(autoincrement())
+  idMozo        Int             @map("id_mozo")
+  idMesa        Int?            @map("id_mesa")
+  estado        String          @default("Pendiente")
+  paraLlevar    Boolean         @default(false) @map("para_llevar")
+  fechaPedido   DateTime        @default(now()) @map("fecha_pedido")
+  total         Float
+  idRestaurante Int             @map("id_restaurante")
+  mozo          Empleado        @relation("MozoPedidos", fields: [idMozo], references: [id])
+  mesa          Mesa?           @relation(fields: [idMesa], references: [id])
+  Restaurante   Restaurante     @relation(fields: [idRestaurante], references: [id])
+  detalles      DetallePedido[]
+  compras       Compra[]
+}
+
+model DetallePedido {
+  id         Int      @id @default(autoincrement())
+  idPedido   Int      @map("id_pedido")
+  idProducto Int      @map("id_producto")
+  cantidad   Int
+  subtotal   Float
+  pedido     Pedido   @relation(fields: [idPedido], references: [id])
+  producto   Producto @relation(fields: [idProducto], references: [id])
+}
+
+model MetodoPago {
+  id           Int      @id @default(autoincrement())
+  nombreMetodo String   @map("nombre_metodo") @db.VarChar(50)
+  compras      Compra[]
+}
+
+model Compra {
+  id           Int        @id @default(autoincrement())
+  idPedido     Int        @map("id_pedido")
+  idCajero     Int        @map("id_cajero")
+  idMetodoPago Int        @map("id_metodo_pago")
+  propina      Float?
+  total        Float
+  ruc          String?    @db.VarChar(11)
+  fechaPago    DateTime   @default(now()) @map("fecha_pago")
+  pedido       Pedido     @relation(fields: [idPedido], references: [id])
+  cajero       Empleado   @relation("CajeroCompras", fields: [idCajero], references: [id])
+  metodoPago   MetodoPago @relation(fields: [idMetodoPago], references: [id])
+}
