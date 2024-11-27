@@ -5,10 +5,17 @@ enum EmpleadoRol {
   Admin
 }
 
+enum MetodoPago {
+  Efectivo
+  Yape
+  Plin
+  Targeta
+}
+
 model Restaurante {
   id            Int        @id @default(autoincrement())
-  idEmpresa     Int        @unique @map("id_empresa")
   empresa       Empresa    @relation(fields: [idEmpresa], references: [id])
+  idEmpresa     Int        @unique
   empleado      Empleado[]
   mesas         Mesa[]
   productos     Producto[]
@@ -85,12 +92,6 @@ model DetallePedido {
   producto   Producto @relation(fields: [idProducto], references: [id])
 }
 
-model MetodoPago {
-  id           Int      @id @default(autoincrement())
-  nombreMetodo String   @map("nombre_metodo") @db.VarChar(50)
-  compras      Compra[]
-}
-
 model Compra {
   id           Int        @id @default(autoincrement())
   idPedido     Int        @map("id_pedido")
@@ -102,5 +103,5 @@ model Compra {
   fechaPago    DateTime   @default(now()) @map("fecha_pago")
   pedido       Pedido     @relation(fields: [idPedido], references: [id])
   cajero       Empleado   @relation("CajeroCompras", fields: [idCajero], references: [id])
-  metodoPago   MetodoPago @relation(fields: [idMetodoPago], references: [id])
+  metodoPago   MetodoPago @default(Efectivo) @map("metodo_pago")
 }
