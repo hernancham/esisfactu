@@ -1,0 +1,154 @@
+model Empleado {
+  id              Int            @id @default(autoincrement())
+  nombre          String
+  correo          String         @unique
+  telefono        String?
+  direccion       String?
+  fechaIngreso    DateTime       @default(now())
+  fechaNacimiento DateTime?
+  rolEmpleado     RolEmpleado
+  codigoEmpleado  String         @unique
+  estado          EstadoEmpleado @default(ACTIVO)
+  creadoEn        DateTime       @default(now())
+  actualizadoEn   DateTime       @updatedAt
+  isDeleted       Boolean        @default(false)
+  pedidos         Pedido[]
+  ventas          Venta[]
+  modificadoLogs  Log[]
+
+  @@index([codigoEmpleado])
+}
+
+model Mesa {
+  id            Int        @id @default(autoincrement())
+  codigoMesa    String     @unique
+  estado        EstadoMesa @default(DISPONIBLE)
+  isDeleted     Boolean    @default(false)
+  pedidos       Pedido[]
+  creadoEn      DateTime   @default(now())
+  actualizadoEn DateTime   @updatedAt
+
+  @@index([codigoMesa])
+}
+
+model Producto {
+  id            Int             @id @default(autoincrement())
+  nombre        String
+  descripcion   String?
+  imagenURL     String
+  precio        Float
+  disponible    Boolean         @default(true)
+  isDeleted     Boolean         @default(false)
+  categoria     Categoria       @relation(fields: [categoriaId], references: [id])
+  categoriaId   Int
+  pedidos       DetallePedido[]
+  creadoEn      DateTime        @default(now())
+  actualizadoEn DateTime        @updatedAt
+}
+
+model Categoria {
+  id            Int        @id @default(autoincrement())
+  nombre        String
+  descripcion   String?
+  isDeleted     Boolean    @default(false)
+  productos     Producto[]
+  creadoEn      DateTime   @default(now())
+  actualizadoEn DateTime   @updatedAt
+}
+
+model Pedido {
+  id            Int             @id @default(autoincrement())
+  mesa          Mesa            @relation(fields: [mesaId], references: [id])
+  mesaId        Int
+  mesero        Empleado        @relation(fields: [meseroId], references: [id])
+  meseroId      Int
+  isDeleted     Boolean         @default(false)
+  detalles      DetallePedido[]
+  venta         Venta?
+  estado        EstadoPedido    @default(PENDIENTE)
+  creadoEn      DateTime        @default(now())
+  actualizadoEn DateTime        @updatedAt
+}
+
+model Venta {
+  id            Int        @id @default(autoincrement())
+  pedido        Pedido     @relation(fields: [pedidoId], references: [id])
+  pedidoId      Int        @unique
+  total         Float
+  metodoPago    MetodoPago
+  isDeleted     Boolean    @default(false)
+  cajero        Empleado?  @relation(fields: [cajeroId], references: [id])
+  cajeroId      Int?
+  factura       Factura?
+  creadoEn      DateTime   @default(now())
+  actualizadoEn DateTime   @updatedAt
+}
+
+model Factura {
+  id            Int      @id @default(autoincrement())
+  numero        String   @unique
+  cliente       String?
+  ruc           String?
+  direccion     String?
+  isDeleted     Boolean  @default(false)
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+  venta         Venta?   @relation(fields: [ventaId], references: [id])
+  ventaId       Int?     @unique
+}
+
+model DetallePedido {
+  id            Int      @id @default(autoincrement())
+  pedido        Pedido   @relation(fields: [pedidoId], references: [id])
+  pedidoId      Int
+  producto      Producto @relation(fields: [productoId], references: [id])
+  productoId    Int
+  cantidad      Int
+  precio        Float
+  observaciones String?
+  isDeleted     Boolean  @default(false)
+}
+
+model Log {
+  id            Int      @id @default(autoincrement())
+  tabla         String
+  campo         String
+  valorAnterior String?
+  valorNuevo    String?
+  empleado      Empleado @relation(fields: [empleadoId], references: [id])
+  empleadoId    Int
+  isDeleted     Boolean  @default(false)
+  fecha         DateTime @default(now())
+}
+
+enum RolEmpleado {
+  ADMINISTRADOR
+  MESERO
+  COCINERO
+  CAJERO
+}
+
+enum EstadoMesa {
+  DISPONIBLE
+  OCUPADA
+  RESERVADA
+}
+
+enum EstadoPedido {
+  PENDIENTE
+  PREPARANDO
+  SERVIDO
+  CANCELADO
+}
+
+enum MetodoPago {
+  EFECTIVO
+  YAPE
+  PLIN
+  TARJETA
+}
+
+enum EstadoEmpleado {
+  ACTIVO
+  INACTIVO
+}
